@@ -5,6 +5,10 @@ uv = "latest"
 [settings]
 python.uv_venv_auto = true
 
-[tasks.build]
+[tasks.query-API]
 description = 'Start CLI Agent'
 run = "uv run main.py"
+
+[tasks.dry-run]
+description = 'Run local test without API'
+run = "uv run test.py"

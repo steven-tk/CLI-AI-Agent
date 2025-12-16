@@ -11,8 +11,8 @@ parser.add_argument("--verbose", action="store_true", help="Enable verbose outpu
 args = parser.parse_args()
 
 messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
-
-
+prompt_tokens = 0
+response_tokens = 0
 def main():
     print("CLI AI Agent running...")
 
@@ -24,17 +24,18 @@ def main():
     client = genai.Client(api_key=api_key)
     
     query_message = messages
-    response = client.models.generate_content(model="gemini-2.5-flash", contents=query_message)
+    #response = client.models.generate_content(model="gemini-2.5-flash", contents=query_message)
 
-    if not response.usage_metadata:
-        raise RuntimeError("failed API call")
-    prompt_tokens = response.usage_metadata.prompt_token_count
-    response_tokens = response.usage_metadata.candidates_token_count
+    #if not response.usage_metadata:
+    #    raise RuntimeError("failed API call")
+    #prompt_tokens = response.usage_metadata.prompt_token_count
+    #response_tokens = response.usage_metadata.candidates_token_count
 
     if args.verbose:
         print(f"User prompt:\n{args.user_prompt}")
         print(f"\nPrompt tokens: {prompt_tokens}\nResponse tokens: {response_tokens}\n")
-    print("Response:\n", response.text)
+    #print("Response:\n", response.text)
+    print("test done")
 
 
 if __name__ == "__main__":
