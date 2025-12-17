@@ -5,16 +5,13 @@ import argparse
 from google.genai import types
 from prompts import system_prompt
 from schemas import schema_get_files_info, schema_get_file_content, schema_write_file, schema_run_python_file
-from functions.call_function import call_function
+from call_function import call_function
 
 
 parser = argparse.ArgumentParser(description="Chatbot")
 parser.add_argument("user_prompt", type=str, help="User prompt")
 parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
 args = parser.parse_args()
-
-messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
-
 
 def main():
     print("CLI AI Agent running...")
@@ -26,6 +23,14 @@ def main():
 
     client = genai.Client(api_key=api_key)
     
+
+    messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
+
+
+
+
+
+
     query_message = messages
 
     available_functions = types.Tool(
@@ -68,7 +73,7 @@ def main():
     for function_call_part in response.function_calls:
         function_call_result = call_function(function_call_part, verbose=args.verbose)
 
-        if not function_call_result.parts[0].function_response.response:
+        if function_call_result.parts[0].function_response.response is None:
             raise RuntimeError("Fatal Error: Function call did not return a valid response.")
 
         function_call_results.append(function_call_result.parts[0])
@@ -80,3 +85,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
