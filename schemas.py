@@ -24,12 +24,12 @@ schema_get_file_content = types.FunctionDeclaration(
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
-            "directory": types.Schema(
+            "file_path": types.Schema(
                 type=types.Type.STRING,
                 description="Path to the file to read, relative to the working directory.",
             ),
         },
-        required=["directory"]
+        required=["file_path"]
     ),
 )
 

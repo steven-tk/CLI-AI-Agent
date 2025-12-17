@@ -5,6 +5,7 @@ import argparse
 from google.genai import types
 from prompts import system_prompt
 from schemas import schema_get_files_info, schema_get_file_content, schema_write_file, schema_run_python_file
+from functions.call_function import call_function
 
 
 parser = argparse.ArgumentParser(description="Chatbot")
@@ -60,13 +61,20 @@ def main():
     if not response.function_calls:
         print("Response:\n", response.text)
         return
+    
+
+    function_call_results = []
 
     for function_call_part in response.function_calls:
-        print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+        function_call_result = call_function(function_call_part, verbose=args.verbose)
 
+        if not function_call_result.parts[0].function_response.response:
+            raise RuntimeError("Fatal Error: Function call did not return a valid response.")
 
+        function_call_results.append(function_call_result.parts[0])
 
-    
+        if args.verbose:
+            print(f"-> {function_call_result.parts[0].function_response.response}")
 
 
 
