@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from google import genai
 import argparse
 from google.genai import types
+from prompts import system_prompt
+from schemas import schema_get_files_info
 
 
 parser = argparse.ArgumentParser(description="Chatbot")
@@ -24,17 +26,44 @@ def main():
     client = genai.Client(api_key=api_key)
     
     query_message = messages
-    response = client.models.generate_content(model="gemini-2.5-flash", contents=query_message)
 
+    available_functions = types.Tool(
+        function_declarations=[schema_get_files_info],
+
+        )
+
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=query_message,
+        config={
+            'tools': [available_functions],
+            'system_instruction': system_prompt,
+            },
+        )
+    
+    
     if not response.usage_metadata:
         raise RuntimeError("failed API call")
     prompt_tokens = response.usage_metadata.prompt_token_count
     response_tokens = response.usage_metadata.candidates_token_count
 
     if args.verbose:
-        print(f"User prompt:\n{args.user_prompt}")
-        print(f"\nPrompt tokens: {prompt_tokens}\nResponse tokens: {response_tokens}\n")
-    print("Response:\n", response.text)
+            print(f"User prompt:\n{args.user_prompt}")
+            print(f"\nPrompt tokens: {prompt_tokens}\nResponse tokens: {response_tokens}\n")
+
+
+    if not response.function_calls:
+        print("Response:\n", response.text)
+        return
+
+    for function_call_part in response.function_calls:
+        print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+
+
+
+    
+
 
 
 if __name__ == "__main__":
