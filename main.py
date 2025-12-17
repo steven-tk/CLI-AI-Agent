@@ -4,7 +4,7 @@ from google import genai
 import argparse
 from google.genai import types
 from prompts import system_prompt
-from schemas import schema_get_files_info
+from schemas import schema_get_files_info, schema_get_file_content, schema_write_file, schema_run_python_file
 
 
 parser = argparse.ArgumentParser(description="Chatbot")
@@ -28,8 +28,12 @@ def main():
     query_message = messages
 
     available_functions = types.Tool(
-        function_declarations=[schema_get_files_info],
-
+        function_declarations=[
+            schema_get_files_info,
+            schema_get_file_content,
+            schema_write_file,
+            schema_run_python_file,
+            ],
         )
 
 
